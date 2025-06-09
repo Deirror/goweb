@@ -23,6 +23,7 @@ func (l *LoggingService) FetchPrice(ctx context.Context, ticker string) (price f
 			Any("requestID", ctx.Value("requestID")).
 			Dur("took", time.Since(begin)).
 			AnErr("err", err).
+			Str("ticker", ticker).
 			Float64("price", price).
 			Msg("Fetch price")
 	}(time.Now())
