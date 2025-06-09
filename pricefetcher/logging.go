@@ -20,6 +20,7 @@ func NewLoggingService(next PriceFetcher) PriceFetcher {
 func (l *LoggingService) FetchPrice(ctx context.Context, ticker string) (price float64, err error) {
 	defer func(begin time.Time) {
 		log.Info().
+			Any("requestID", ctx.Value("requestID")).
 			Dur("took", time.Since(begin)).
 			AnErr("err", err).
 			Float64("price", price).

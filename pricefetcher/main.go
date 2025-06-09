@@ -1,8 +1,7 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"flag"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -12,13 +11,10 @@ import (
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 
+	listenAddr := flag.String("listenAddr", ":3000", "listen address the service is running")
+
 	svc := NewLoggingService(&StockFetcher{})
 
-	price, err := svc.FetchPrice(context.Background(), "AMD")
-	if err != nil {
-		log.Fatal().Err(err).Msg("fetch failed")
-		return
-	}
-
-	fmt.Print(price)
+	server := NewJSONAPIServer(*listenAddr, svc)
+	server.Run()
 }
