@@ -1,6 +1,6 @@
 # rssagg
 
-![rss](https://github.com/user-attachments/assets/e9ea0b7f-d586-4b42-a919-94081fa375fd)
+![rssagg](https://github.com/user-attachments/assets/3a5b25c0-7ba0-4624-a990-8df2a13d4ff5)
 
 > This project was based in [FreeCodeCamp tutorial on Golang](https://www.youtube.com/watch?v=un6ZyFkqFKo)
 
