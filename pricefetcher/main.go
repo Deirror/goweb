@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"pricefetcher/client"
+	"pricefetcher/protobuf"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -15,22 +16,39 @@ import (
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 
-	listenAddr := flag.String("listenAddr", ":3000", "listen address the service is running")
+	var (
+		jsonAddr = flag.String("json", ":3000", "listen address the json service is running")
+		grpcAddr = flag.String("grpc", ":4000", "listen address the grpc service is running")
+		ctx      = context.Background()
+		svc      = NewLoggingService(&StockFetcher{})
+	)
 
-	svc := NewLoggingService(&StockFetcher{})
+	go makeGRPCServerAndRun(*grpcAddr, svc)
 
-	server := NewJSONAPIServer(*listenAddr, svc)
-	go server.Run()
+	go func() {
+		time.Sleep(2 * time.Second)
+		grpcClient, err := client.NewGRPCClient(*grpcAddr)
+		if err != nil {
+			fmt.Printf("1%+v", err)
+			return
+		}
 
-	time.Sleep(1 * time.Second)
+		for {
+			time.Sleep(3 * time.Second)
+			req := protobuf.PriceRequest{
+				Ticker: "AMD",
+			}
 
-	client := client.New("http://localhost:3000")
+			resp, err := grpcClient.FetchPrice(ctx, &req)
+			if err != nil {
+				fmt.Printf("2%+v", err)
+				return
+			}
 
-	price, err := client.FetchPrice(context.Background(), "AMD")
-	if err != nil {
-		// log here
-		return
-	}
+			fmt.Printf("%+v\n", resp)
+		}
+	}()
 
-	fmt.Printf("%+v\n", price)
+	server := NewJSONAPIServer(*jsonAddr, svc)
+	server.Run()
 }

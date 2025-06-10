@@ -5,8 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"pricefetcher/client/types"
+	"pricefetcher/protobuf"
+	"pricefetcher/types"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
+
+func NewGRPCClient(addr string) (protobuf.PriceFetcherClient, error) {
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+
+	c := protobuf.NewPriceFetcherClient(conn)
+
+	return c, nil
+}
 
 type Client struct {
 	endpoint string
