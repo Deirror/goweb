@@ -44,7 +44,7 @@ type AlphaVantagePriceFetcher struct {
 }
 
 func (pf *AlphaVantagePriceFetcher) FetchPrice(ctx context.Context, ticker string) (float64, error) {
-	ctx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
 	queryUrl := fmt.Sprintf("%s?function=GLOBAL_QUOTE&symbol=%s&apikey=%s", pf.cfg.url, ticker, pf.cfg.apiKey)

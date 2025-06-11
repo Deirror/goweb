@@ -57,7 +57,6 @@ func main() {
 
 			resp, err := grpcClient.FetchPrice(ctx, &req)
 			if err != nil {
-				fmt.Printf("%+v\n", err)
 				continue
 			}
 
